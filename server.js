@@ -6,16 +6,13 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Serve static files
-app.use(express.static("public"));
+app.use(express.static("docs"));
 app.use(express.json());
 
-// Home route
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.sendFile(path.join(__dirname, "docs", "index.html"));
 });
 
-// News API routes
 app.get("/api/news", async (req, res) => {
   try {
     const { country = "us", category = "general", q = "", searchType = "top-headlines" } = req.query;
@@ -35,7 +32,6 @@ app.get("/api/news", async (req, res) => {
         },
       });
     } else {
-      // For everything endpoint
       response = await axios.get("https://newsapi.org/v2/everything", {
         params: {
           q: q || category,
@@ -47,8 +43,6 @@ app.get("/api/news", async (req, res) => {
       });
     }
 
-    console.log("API Response status:", response.status);
-    console.log("Total results:", response.data.totalResults);
 
     if (!response.data.articles || response.data.articles.length === 0) {
       return res.json({
